@@ -3,12 +3,12 @@ let number = 0;
 let app = angular.module('mainApp', []);
 app.controller('mainController', ($scope, $http) => {
 
+
     /**
      * @return Response object contains users
      */
 
     $scope.request = function() {
-
         $http({
             method: 'GET',
             url: 'https://jsonplaceholder.typicode.com/users'
@@ -17,6 +17,38 @@ app.controller('mainController', ($scope, $http) => {
         });
     }
     $scope.request();
+
+
+    /**
+     * Show 5 elements from table content
+     * @param number
+     */
+
+    $scope.tablePartBegin = 0;
+    $scope.tablePartLimit = $scope.tablePartBegin + 5;
+
+    $scope.setTablePart = function(number) {
+        $scope.tablePartBegin = number;
+    }
+
+
+    /**
+     *  Change table part
+     */
+    // let tablePartNumber = $scope.tableContent.length / 5;
+    // tablePartNumber = Math.ceil(tablePartNumber);
+
+    $scope.changeTablePart = function(number) {
+        $scope.tablePartBegin += number;
+
+        if($scope.tablePartBegin < 0) {
+            $scope.tablePartBegin = 0;
+        }
+
+        if($scope.tablePartBegin > 5) {
+            $scope.tablePartBegin = 5;
+        }
+    }
 
 
     /**
@@ -97,16 +129,9 @@ app.controller('mainController', ($scope, $http) => {
 
     $scope.saveChanges = function(number) {
 
-        let inputsWithContent = true;
-        let modalInputs = document.getElementsByClassName("modalInput");
+        let modalInputs = document.getElementsByClassName('modalInput');
 
-        // for(i=0; i<modalInputs.length; i++) {
-        //     if(modalInputs[i].value === "" || modalInputs[i].value === null) {
-        //         inputsWithContent = false;
-        //     }
-        // }
-
-        if(number === false /*&& inputsWithContent === true*/) {
+        if(number === false) {
 
             number = $scope.tableContent.length;
 
@@ -129,6 +154,7 @@ app.controller('mainController', ($scope, $http) => {
         $scope.tableContent[number].website = modalInputs[3].value;
     }
 
+
     /**
      * Create empty inputs for new users
      */
@@ -147,6 +173,7 @@ app.controller('mainController', ($scope, $http) => {
         $scope.editMode.innerHTML = editModeContent;
     }
 
+
     /**
      * Remove selected person
      */
@@ -157,5 +184,4 @@ app.controller('mainController', ($scope, $http) => {
             $scope.tableContent.splice(number, 1);
         }
     }
-
 });
