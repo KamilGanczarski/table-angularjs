@@ -43,15 +43,18 @@
     </header>
 
     <main class='container-fluid row mx-auto'>
-        <div class="col-sm-12 mx-auto my-5">
+        <div class="col-sm-12 mx-auto my-2">
+
+            <div class="w-100 m-0 row justify-content-between">
+                <button class="btn btn-danger m-3" ng-click="request()"
+                        >Reflash table</button>
+                <button class="btn btn-danger m-3" ng-click="addTableRow()" data-toggle="modal"
+                        data-target="#exampleModal">Add person</button>
+            </div>
 
             <table class="table table-hover table-light">
                 <thead class="thead-dark">
                     <tr>
-                        <th scope="col" ng-click="sort('id')">
-                            <a class="btn text-left text-light w-100 h-100">Id</a>
-                        </th>
-
                         <th scope="col" ng-click="sort('name')">
                             <a class="btn text-left text-light w-100 h-100">Name</a>
                         </th>
@@ -61,7 +64,7 @@
                         </th>
 
                         <th scope="col" ng-click="sort('company.catchPhrase')">
-                            <a class="btn text-left text-light w-100 h-100">Catch Phrase</a>
+                            <a class="btn text-left text-light w-100 h-100">Message</a>
                         </th>
 
                         <th scope="col" ng-click="sort('website')">
@@ -75,7 +78,6 @@
                 </thead>
                 <tbody>
                     <tr ng-repeat="item in tableContent | orderBy: sortValue: sortBool | filter: tableSearch">
-                        <th scope="row">{{ item.id }}</th>
                         <td>{{ item.name }}</td>
                         <td>{{ item.email }}</td>
                         <td>{{ item.company.catchPhrase }}</td>
@@ -83,7 +85,8 @@
 
                         <!-- Button trigger modal -->
                         <td class="text-center">
-                            <button class="btn btn-danger" ng-click="edit(item.id)" data-toggle="modal" data-target="#exampleModal">edit</button>
+                            <button class="btn btn-danger" ng-click="edit(item.id)"
+                                    data-toggle="modal" data-target="#exampleModal">edit</button>
                         </td>
                     </tr>
                 </tbody>
@@ -113,13 +116,13 @@
                 <div class="modal-footer">
 
                     <button type="button" class="btn btn-primary" data-dismiss="modal"
-                        >Save changes</button>
+                        ng-click="saveChanges(numberValue)">Save changes</button>
 
                     <button type="button" class="btn btn-secondary" data-dismiss="modal"
                         >Close</button>
 
                     <button type="button" class="btn btn-danger" data-dismiss="modal"
-                        ng-click="remove(removeValue)">Remove</button>
+                        ng-click="remove(numberValue)">Remove</button>
                 </div>
             </div>
         </div>

@@ -1,3 +1,5 @@
+let number = 0;
+
 let app = angular.module('mainApp', []);
 app.controller('mainController', ($scope, $http) => {
 
@@ -5,7 +7,7 @@ app.controller('mainController', ($scope, $http) => {
      * @return Response object contains users
      */
 
-    function request() {
+    $scope.request = function() {
 
         $http({
             method: 'GET',
@@ -14,7 +16,8 @@ app.controller('mainController', ($scope, $http) => {
             $scope.tableContent = response.data;
         });
     }
-    request();
+    $scope.request();
+
 
     /**
      * Ascending or descending order table by selected value
@@ -38,51 +41,120 @@ app.controller('mainController', ($scope, $http) => {
 
     $scope.sort('id');
 
+
+    /**
+     * Search id in $scope.tableContent (array)
+     * and return correctly array index
+     * @param number
+     * @returns {number}
+     */
+
+    function getCorrectArrayIndex(number) {
+        for(i=0; i<$scope.tableContent.length; i++) {
+            if($scope.tableContent[i].id === number) {
+                return i;
+            }
+        }
+    }
+
+
     /**
      * Get selected user and write out in inputs
      * @type {HTMLElement}
      */
 
     let editModeContent = "";
-    let editModeClass = 'class="form-control form-control-md mb-2"';
+    let editModeClass = 'class="form-control form-control-md mb-2 modalInput"';
     $scope.editMode = document.getElementById("edit-mode");
 
     $scope.edit = function(number) {
 
-        for(i=0; i<$scope.tableContent.length; i++) {
-            if($scope.tableContent[i].id == number) {
-                number = i;
-            }
-        }
+        number = getCorrectArrayIndex(number);
 
         editModeContent =
-        '<input type="text" value="'
-            + $scope.tableContent[number].name + '"' + editModeClass + '>'
+            '<input type="text" placeholder="Name" value="'
+                + $scope.tableContent[number].name + '"' + editModeClass + '>'
 
-        + '<input type="text" value="'
-            + $scope.tableContent[number].email + '"' + editModeClass + '>'
+            + '<input type="text" placeholder="Email" value="'
+                + $scope.tableContent[number].email + '"' + editModeClass + '>'
 
-        + '<input type="text" value="'
-            + $scope.tableContent[number].company.catchPhrase + '"' + editModeClass + '>'
+            + '<input type="text" placeholder="Message" value="'
+                + $scope.tableContent[number].company.catchPhrase + '"' + editModeClass + '>'
 
-        + '<input type="text" value="'
-            + $scope.tableContent[number].website + '"' + editModeClass + '>';
+            + '<input type="text" value="'
+                + $scope.tableContent[number].website + '"' + editModeClass + '>';
 
-        $scope.removeValue = $scope.tableContent[number].id;
+        $scope.numberValue = $scope.tableContent[number].id;
+
+        $scope.editMode.innerHTML = editModeContent;
+    }
+
+
+    /**
+     * Get value from inputs ( class modalInput )
+     * and upload and change content in array $scope.tableContent
+     */
+
+    $scope.saveChanges = function(number) {
+
+        let inputsWithContent = true;
+        let modalInputs = document.getElementsByClassName("modalInput");
+
+        // for(i=0; i<modalInputs.length; i++) {
+        //     if(modalInputs[i].value === "" || modalInputs[i].value === null) {
+        //         inputsWithContent = false;
+        //     }
+        // }
+
+        if(number === false /*&& inputsWithContent === true*/) {
+
+            number = $scope.tableContent.length;
+
+            $scope.tableContent[number] = {
+                id: number+1,
+                name: "",
+                email: "",
+                company: {
+                    catchPhrase: ""
+                },
+                website: ""
+            }
+        } else {
+            number = getCorrectArrayIndex(number);
+        }
+
+        $scope.tableContent[number].name = modalInputs[0].value;
+        $scope.tableContent[number].email = modalInputs[1].value;
+        $scope.tableContent[number].company.catchPhrase = modalInputs[2].value;
+        $scope.tableContent[number].website = modalInputs[3].value;
+    }
+
+    /**
+     * Create empty inputs for new users
+     */
+
+    $scope.addTableRow = function() {
+        number = $scope.tableContent.length;
+
+        editModeContent =
+            '<input type="text" placeholder="Name"' + editModeClass + '>'
+            + '<input type="text" placeholder="Email"' + editModeClass + '>'
+            + '<input type="text" placeholder="Message"' + editModeClass + '>'
+            + '<input type="text" placeholder="Website"' + editModeClass + '>';
+
+        $scope.numberValue = false; //new element value set as false
 
         $scope.editMode.innerHTML = editModeContent;
     }
 
     /**
      * Remove selected person
-     * @param number
      */
 
     $scope.remove = function(number) {
-        for(i=0; i<$scope.tableContent.length; i++) {
-            if($scope.tableContent[i].id === number) {
-                $scope.tableContent.splice(i, 1);
-            }
+        if(number !== false) {
+            number = getCorrectArrayIndex(number);
+            $scope.tableContent.splice(number, 1);
         }
     }
 
