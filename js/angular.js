@@ -3,6 +3,11 @@ let number = 0;
 let app = angular.module('mainApp', []);
 app.controller('mainController', ($scope, $http) => {
 
+    $scope.tablePartBegin = 0;
+    $scope.tablePartLimit = 10;
+    $scope.tableContent = [];
+    $scope.buttonArray = []; // Array to create
+                            // button which user change table number
 
     /**
      * @return Response object contains users
@@ -14,18 +19,16 @@ app.controller('mainController', ($scope, $http) => {
             url: 'https://jsonplaceholder.typicode.com/users'
         }).then((response) => {
             $scope.tableContent = response.data;
+            buttonArrayContent();
         });
     }
     $scope.request();
 
 
     /**
-     * Show 5 elements from table content
+     * Show 10 elements from table content
      * @param number
      */
-
-    $scope.tablePartBegin = 0;
-    $scope.tablePartLimit = $scope.tablePartBegin + 5;
 
     $scope.setTablePart = function(number) {
         $scope.tablePartBegin = number;
@@ -33,20 +36,34 @@ app.controller('mainController', ($scope, $http) => {
 
 
     /**
+     * @return array $scope.buttonArray
+     */
+    let buttonArrayLength = $scope.tableContent.length / 10;
+
+    function buttonArrayContent() {
+        $scope.buttonArray = [];
+        for(i=0; i<($scope.tableContent.length / 10); i++) {
+            $scope.buttonArray[i] = i+1;
+        }
+    }
+
+
+    /**
      *  Change table part
      */
-    // let tablePartNumber = $scope.tableContent.length / 5;
-    // tablePartNumber = Math.ceil(tablePartNumber);
 
     $scope.changeTablePart = function(number) {
+
         $scope.tablePartBegin += number;
 
         if($scope.tablePartBegin < 0) {
             $scope.tablePartBegin = 0;
         }
 
-        if($scope.tablePartBegin > 5) {
-            $scope.tablePartBegin = 5;
+        if($scope.tablePartBegin >= $scope.tableContent.length) {
+            $scope.tablePartBegin = Math.ceil($scope.tableContent.length/10);
+            $scope.tablePartBegin *= 10;
+            $scope.tablePartBegin -= $scope.tablePartLimit
         }
     }
 
@@ -70,15 +87,13 @@ app.controller('mainController', ($scope, $http) => {
         }
         $scope.sortValue = sortElement;
     }
-
     $scope.sort('id');
 
 
     /**
      * Search id in $scope.tableContent (array)
      * and return correctly array index
-     * @param number
-     * @returns {number}
+     * @returns number
      */
 
     function getCorrectArrayIndex(number) {
@@ -95,7 +110,7 @@ app.controller('mainController', ($scope, $http) => {
      * @type {HTMLElement}
      */
 
-    let editModeContent = "";
+    let editModeContent = '';
     let editModeClass = 'class="form-control form-control-md mb-2 modalInput"';
     $scope.editMode = document.getElementById("edit-mode");
 
@@ -144,6 +159,8 @@ app.controller('mainController', ($scope, $http) => {
                 },
                 website: ""
             }
+
+            buttonArrayContent();
         } else {
             number = getCorrectArrayIndex(number);
         }
@@ -168,7 +185,7 @@ app.controller('mainController', ($scope, $http) => {
             + '<input type="text" placeholder="Message"' + editModeClass + '>'
             + '<input type="text" placeholder="Website"' + editModeClass + '>';
 
-        $scope.numberValue = false; //new element value set as false
+        $scope.numberValue = false; //new user set value as false
 
         $scope.editMode.innerHTML = editModeContent;
     }
@@ -183,5 +200,7 @@ app.controller('mainController', ($scope, $http) => {
             number = getCorrectArrayIndex(number);
             $scope.tableContent.splice(number, 1);
         }
+
+        buttonArrayContent();
     }
 });

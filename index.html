@@ -52,27 +52,27 @@
                         data-target="#exampleModal">Add person</button>
             </div>
 
-            <table class="table table-hover table-light">
-                <thead class="thead-dark">
+            <table class="table table-hover table-dark">
+                <thead class="bg-light">
                     <tr>
                         <th scope="col" ng-click="sort('name')">
-                            <a class="btn text-left text-light w-100 h-100">Name</a>
+                            <a class="btn text-left text-dark w-100 h-100">Name</a>
                         </th>
 
                         <th scope="col" ng-click="sort('email')">
-                            <a class="btn text-left text-light w-100 h-100">Email</a>
+                            <a class="btn text-left text-dark w-100 h-100">Email</a>
                         </th>
 
                         <th scope="col" ng-click="sort('company.catchPhrase')">
-                            <a class="btn text-left text-light w-100 h-100">Message</a>
+                            <a class="btn text-left text-dark w-100 h-100">Message</a>
                         </th>
 
                         <th scope="col" ng-click="sort('website')">
-                            <a class="btn text-left text-light w-100 h-100">Website</a>
+                            <a class="btn text-left text-dark w-100 h-100">Website</a>
                         </th>
 
                         <th scope="col">
-                            <a class="btn text-left text-light w-100 h-100">Edit</a>
+                            <a class="btn text-left text-dark w-100 h-100">Edit</a>
                         </th>
                     </tr>
                 </thead>
@@ -93,12 +93,12 @@
             </table>
 
             <div class="w-100 m-0 row justify-content-end">
-                <button class="btn btn-danger my-3 mx-1"ng-click="changeTablePart(-5)"> < </button>
-                <div>
-                    <button class="btn btn-danger my-3 mx-1" ng-click="setTablePart(0)"> 1 </button>
-                    <button class="btn btn-danger my-3 mx-1" ng-click="setTablePart(5)"> 2 </button>
+                <button class="btn btn-danger m-1" ng-click="changeTablePart(-tablePartLimit)"> &#60; </button>
+                <div ng-repeat="num in buttonArray">
+                    <button class="btn btn-danger m-1"
+                            ng-click="setTablePart(num*tablePartLimit - tablePartLimit)">{{ num }}</button>
                 </div>
-                <button class="btn btn-danger my-3 mx-1" ng-click="changeTablePart(+5)"> > </button>
+                <button class="btn btn-danger m-1" ng-click="changeTablePart(+tablePartLimit)"> &#62; </button>
             </div>
         </div>
     </main>
@@ -112,15 +112,16 @@
     <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
+
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel">Edit content</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body text-center" id="edit-mode">
 
-                </div>
+                <div class="modal-body text-center" id="edit-mode"></div>
+
                 <div class="modal-footer">
 
                     <button type="button" class="btn btn-primary" data-dismiss="modal"
@@ -131,7 +132,9 @@
 
                     <button type="button" class="btn btn-danger" data-dismiss="modal"
                         ng-click="remove(numberValue)">Remove</button>
+
                 </div>
+
             </div>
         </div>
     </div>
