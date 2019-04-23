@@ -17,7 +17,7 @@ app.controller('mainController', ($scope, $http) => {
   $scope.request = function() {
     $http({
       method: 'GET',
-        url: '/js/data.json' //github
+        url: 'js/data.json' //github
         // url: '/js/table/js/data.json' // local
       }).then((response) => {
         $scope.tableContent = response.data;
