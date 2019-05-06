@@ -17,8 +17,7 @@ app.controller('mainController', ($scope, $http) => {
   $scope.request = function() {
     $http({
       method: 'GET',
-        url: 'js/data.json' //github
-        // url: '/js/table/js/data.json' // local
+        url: 'js/data.json'
       }).then((response) => {
         $scope.tableContent = response.data;
         tableContent = $scope.tableContent;
@@ -59,15 +58,15 @@ app.controller('mainController', ($scope, $http) => {
 
     $scope.tablePartBegin += number;
 
-      if($scope.tablePartBegin < 0) {
-        $scope.tablePartBegin = 0;
-      }
+    if($scope.tablePartBegin < 0) {
+      $scope.tablePartBegin = 0;
+    }
 
-      if($scope.tablePartBegin >= $scope.tableContent.length) {
-        $scope.tablePartBegin = Math.ceil($scope.tableContent.length / 10);
-        $scope.tablePartBegin *= 10;
-        $scope.tablePartBegin -= $scope.tablePartLimit
-      }
+    if($scope.tablePartBegin >= $scope.tableContent.length) {
+      $scope.tablePartBegin = Math.ceil($scope.tableContent.length / 10);
+      $scope.tablePartBegin *= 10;
+      $scope.tablePartBegin -= $scope.tablePartLimit
+    }
   }
 
 
@@ -122,16 +121,19 @@ app.controller('mainController', ($scope, $http) => {
 
     editModeContent =
       '<input type="text" placeholder="Name" value="'
-        + $scope.tableContent[number].name + '"' + editModeClass + '>'
+        + $scope.tableContent[number].firstname + '"' + editModeClass + '>'
+
+      + '<input type="text" placeholder="Name" value="'
+        + $scope.tableContent[number].surname + '"' + editModeClass + '>'
 
       + '<input type="text" placeholder="Email" value="'
         + $scope.tableContent[number].email + '"' + editModeClass + '>'
 
       + '<input type="text" placeholder="Message" value="'
-        + $scope.tableContent[number].company.catchPhrase + '"' + editModeClass + '>'
+        + $scope.tableContent[number].company + '"' + editModeClass + '>'
 
       + '<input type="text" value="'
-        + $scope.tableContent[number].website + '"' + editModeClass + '>';
+        + $scope.tableContent[number].balance + '"' + editModeClass + '>';
 
     $scope.numberValue = $scope.tableContent[number].id;
 
@@ -152,13 +154,22 @@ app.controller('mainController', ($scope, $http) => {
       number = $scope.tableContent.length;
 
       $scope.tableContent[number] = {
-        id: number+1,
-        name: "",
-        email: "",
-        company: {
-          catchPhrase: ""
+        "id": "",
+        "firstName": "",
+        "surname": "",
+        "gender": "",
+        "company": "",
+        "email": "",
+        "phone": "",
+        "address": {
+          "street": "",
+          "city": "",
+          "state": ""
         },
-        website: ""
+        "balance": "",
+        "about": "",
+        "file": "space.jpg",
+        "registered": ""
       }
 
       buttonArrayContent();
@@ -167,10 +178,11 @@ app.controller('mainController', ($scope, $http) => {
       number = getCorrectArrayIndex(number);
     }
 
-    $scope.tableContent[number].name = modalInputs[0].value;
-    $scope.tableContent[number].email = modalInputs[1].value;
-    $scope.tableContent[number].company.catchPhrase = modalInputs[2].value;
-    $scope.tableContent[number].website = modalInputs[3].value;
+    $scope.tableContent[number].firstname = modalInputs[0].value;
+    $scope.tableContent[number].surname = modalInputs[1].value;
+    $scope.tableContent[number].email = modalInputs[2].value;
+    $scope.tableContent[number].company = modalInputs[3].value;
+    $scope.tableContent[number].balance = modalInputs[4].value;
   }
 
 
@@ -182,10 +194,11 @@ app.controller('mainController', ($scope, $http) => {
     number = $scope.tableContent.length;
 
     editModeContent =
-      '<input type="text" placeholder="Name"' + editModeClass + '>'
+    '<input type="text" placeholder="Fristname"' + editModeClass + '>'
+      + '<input type="text" placeholder="Surname"' + editModeClass + '>'
       + '<input type="text" placeholder="Email"' + editModeClass + '>'
-      + '<input type="text" placeholder="Message"' + editModeClass + '>'
-      + '<input type="text" placeholder="Website"' + editModeClass + '>';
+      + '<input type="text" placeholder="Company"' + editModeClass + '>'
+      + '<input type="text" placeholder="Balance"' + editModeClass + '>';
 
     $scope.numberValue = false; //new user set value as false
 

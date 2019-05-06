@@ -50,20 +50,24 @@
         <table class="table table-hover table-dark">
           <thead class="bg-light">
             <tr>
-              <th scope="col" ng-click="sort('name')">
-                <a class="btn text-left text-dark w-100 h-100">Name</a>
+              <th scope="col" ng-click="sort('firstname')">
+                <a class="btn text-left text-dark w-100 h-100">Firstname</a>
+              </th>
+
+              <th scope="col" ng-click="sort('surname')">
+                <a class="btn text-left text-dark w-100 h-100">Surname</a>
               </th>
 
               <th scope="col" ng-click="sort('email')">
                 <a class="btn text-left text-dark w-100 h-100">Email</a>
               </th>
 
-              <th scope="col" ng-click="sort('company.catchPhrase')">
-                <a class="btn text-left text-dark w-100 h-100">Message</a>
+              <th scope="col" ng-click="sort('company')">
+                <a class="btn text-left text-dark w-100 h-100">Company</a>
               </th>
 
-              <th scope="col" ng-click="sort('website')">
-                <a class="btn text-left text-dark w-100 h-100">Website</a>
+              <th scope="col" ng-click="sort('balance')">
+                <a class="btn text-left text-dark w-100 h-100">Balance</a>
               </th>
 
               <th scope="col">
@@ -77,10 +81,11 @@
           </thead>
         <tbody>
           <tr ng-repeat="item in tableContent | orderBy: sortValue: sortBool | filter: tableSearch | limitTo: tablePartLimit: tablePartBegin">
-            <td>{{ item.name }}</td>
+            <td>{{ item.firstname }}</td>
+            <td>{{ item.surname }}</td>
               <td>{{ item.email }}</td>
-              <td>{{ item.company.catchPhrase }}</td>
-              <td>{{ item.website }}</td>
+              <td>{{ item.company }}</td>
+              <td>{{ item.balance }}</td>
 
               <td>
                 <a class="btn text-danger" ng-click="showFiles(item.id)"
