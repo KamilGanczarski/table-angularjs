@@ -7,8 +7,7 @@ app.controller('mainController', ($scope, $http) => {
   $scope.tablePartBegin = 0;
   $scope.tablePartLimit = 10;
   $scope.tableContent = [];
-  $scope.buttonArray = []; // Array to create
-                          // button which user change table number
+  $scope.buttonArray = []; // Array contains button to change table part
 
   /**
    * @return Response object contains users
@@ -20,6 +19,7 @@ app.controller('mainController', ($scope, $http) => {
         url: 'js/data.json'
       }).then((response) => {
         $scope.tableContent = response.data;
+        // variable to inspect array in console
         tableContent = $scope.tableContent;
         buttonArrayContent();
       });
@@ -28,7 +28,7 @@ app.controller('mainController', ($scope, $http) => {
 
 
   /**
-   * Show 10 elements from table content
+   * Set number of limit rows once in table
    * @param number
    */
 
@@ -40,7 +40,6 @@ app.controller('mainController', ($scope, $http) => {
   /**
    * @return array $scope.buttonArray
    */
-  let buttonArrayLength = $scope.tableContent.length / $scope.tablePartLimit;
 
   function buttonArrayContent() {
     $scope.buttonArray = [];
@@ -154,7 +153,7 @@ app.controller('mainController', ($scope, $http) => {
       number = $scope.tableContent.length;
 
       $scope.tableContent[number] = {
-        "id": "",
+        "id": $scope.tableContent.length,
         "firstName": "",
         "surname": "",
         "gender": "",
@@ -216,6 +215,11 @@ app.controller('mainController', ($scope, $http) => {
       $scope.tableContent.splice(number, 1);
     }
     buttonArrayContent();
+
+    // Assign id numbers one more time
+    for(i=0; i<$scope.tableContent.length; i++) {
+      $scope.tableContent[i].id = i;
+    }
   }
 
   $scope.showFiles = function(stringVar) {
