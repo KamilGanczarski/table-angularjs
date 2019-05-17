@@ -41,8 +41,7 @@
   <main class='container-fluid row mx-auto'>
     <div class="col-sm-12 mx-auto my-2">
 
-      <div class="w-100 m-0 row justify-content-between">
-        <button class="btn btn-danger m-3" ng-click="request()">Reflash table</button>
+      <div class="w-100 m-0 row justify-content-end">
         <button class="btn btn-danger m-3" ng-click="addTableRow()" data-toggle="modal"
           data-target="#editModal">Add person</button>
       </div>
@@ -102,12 +101,20 @@
       </table>
 
       <div class="w-100 m-0 row justify-content-end">
-        <button class="btn btn-danger m-1" ng-click="changeTablePart(-tablePartLimit)"> &#60; </button>
-        <div ng-repeat="num in buttonArray">
-          <button class="btn btn-danger m-1"
-            ng-click="setTablePart(num*tablePartLimit - tablePartLimit)">{{ num }}</button>
+
+        <!-- <div class="input-group col-sm-4 justify-content-end">
+          <input type="text" placeholder="Search" class="form-control-sm">
+          <button type="button" class="btn btn-danger"></button>
+        </div> -->
+
+        <div class="row m-0 p-0 justify-content-end">
+          <button class="btn btn-danger m-1" ng-click="changeTablePart(-tablePartLimit)"> &#60; </button>
+          <div ng-repeat="num in buttonArray">
+            <button class="btn btn-danger m-1"
+              ng-click="setTablePart(num*tablePartLimit - tablePartLimit)">{{ num }}</button>
+          </div>
+          <button class="btn btn-danger m-1" ng-click="changeTablePart(+tablePartLimit)"> &#62; </button>
         </div>
-        <button class="btn btn-danger m-1" ng-click="changeTablePart(+tablePartLimit)"> &#62; </button>
       </div>
 
     </div>
@@ -124,7 +131,7 @@
       <div class="modal-content bg-dark">
 
         <div class="modal-header">
-          <h5 class="modal-title text-light" id="exampleModalLabel">Edit content</h5>
+          <h5 class="modal-title text-light" id="exampleModalLabel">{{ editModeTitle }}</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true" class="text-white">&times;</span>
           </button>
@@ -156,7 +163,7 @@
         </div>
 
         <div class="modal-body row" id="edit-mode">
-          <img src="/js/table/style/pictures/space.jpg" width="100%" height="auto">
+          <img ng-src="imageSrc" width="100%" height="auto">
         </div>
 
       </div>

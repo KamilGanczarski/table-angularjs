@@ -7,52 +7,47 @@ app.controller('mainController', ($scope, $http) => {
   $scope.tablePartBegin = 0;
   $scope.tablePartLimit = 10;
   $scope.tableContent = [];
-  $scope.buttonArray = []; // Array contains button to change table part
+  // Array contains button to change table part
+  $scope.buttonArray = [];
+  // String to set edit Modal Dialog title
+  $scope.editModeTitle = "";
 
   /**
-   * @return Response object contains users
-   */
-
+    * Response object contains users
+    */
   $scope.request = function() {
     $http({
       method: 'GET',
-        url: 'js/data.json'
-      }).then((response) => {
-        $scope.tableContent = response.data;
-        // variable to inspect array in console
-        tableContent = $scope.tableContent;
-        buttonArrayContent();
-      });
+      url: 'js/data.json'
+    }).then((response) => {
+      $scope.tableContent = response.data;
+      // variable to inspect array in console
+      tableContent = $scope.tableContent;
+      buttonArrayContent();
+    });
   }
   $scope.request();
 
+  /**
+    * @return array $scope.buttonArray
+    */
+  function buttonArrayContent() {
+    $scope.buttonArray = [];
+    for(i=0; i<($scope.tableContent.length / $scope.tablePartLimit); i++) {
+      $scope.buttonArray[i] = i+1;
+    }
+  }
 
   /**
-   * Set number of limit rows once in table
-   * @param number
-   */
-
+    *Set number of limit rows once in table
+    */
   $scope.setTablePart = function(number) {
     $scope.tablePartBegin = number;
   }
 
-
   /**
-   * @return array $scope.buttonArray
-   */
-
-  function buttonArrayContent() {
-    $scope.buttonArray = [];
-      for(i=0; i<($scope.tableContent.length / $scope.tablePartLimit); i++) {
-        $scope.buttonArray[i] = i+1;
-      }
-  }
-
-
-  /**
-   *  Change table part
-   */
-
+    * Change table part
+    */
   $scope.changeTablePart = function(number) {
 
     $scope.tablePartBegin += number;
@@ -68,13 +63,11 @@ app.controller('mainController', ($scope, $http) => {
     }
   }
 
-
   /**
-   * $sortBool define ascending or descending order by selected value
-   * @param sortElement
-   * @return Function set sortValue and sortBool
-   */
-
+    * $sortBool define ascending or descending order by selected value
+    * @param sortElement
+    * @return Function set sortValue and sortBool
+    */
   $scope.previousElement = '';
 
   $scope.sort = function (sortElement) {
@@ -90,13 +83,11 @@ app.controller('mainController', ($scope, $http) => {
   }
   $scope.sort('id');
 
-
   /**
-   * Search id in $scope.tableContent (array)
-   * and return correctly array index
-   * @returns number
-   */
-
+    * Search id in $scope.tableContent (array)
+    * and return correctly array index
+    * @returns number
+    */
   function getCorrectArrayIndex(number) {
     for(i=0; i<$scope.tableContent.length; i++) {
       if($scope.tableContent[i].id === number) {
@@ -105,17 +96,17 @@ app.controller('mainController', ($scope, $http) => {
     }
   }
 
-
   /**
-   * Get selected user and write out in inputs
-   * @type {HTMLElement}
-   */
-
+    * Get selected user and write out in inputs
+    * @type {HTMLElement}
+    */
   let editModeContent = '';
   let editModeClass = 'class="form-control form-control-md mb-3 modalInput"';
   $scope.editMode = document.getElementById("edit-mode");
 
   $scope.edit = function(number) {
+    $scope.editModeTitle = "Edit person identity";
+
     number = getCorrectArrayIndex(number);
 
     editModeContent =
@@ -139,12 +130,10 @@ app.controller('mainController', ($scope, $http) => {
     $scope.editMode.innerHTML = editModeContent;
   }
 
-
   /**
-   * Get value from inputs ( class modalInput )
-   * and upload and change content in array $scope.tableContent
-   */
-
+    * Get value from inputs ( class modalInput )
+    * and upload and change content in array $scope.tableContent
+    */
   $scope.saveChanges = function(number) {
 
     let modalInputs = document.getElementsByClassName('modalInput');
@@ -176,7 +165,6 @@ app.controller('mainController', ($scope, $http) => {
     else {
       number = getCorrectArrayIndex(number);
     }
-
     $scope.tableContent[number].firstname = modalInputs[0].value;
     $scope.tableContent[number].surname = modalInputs[1].value;
     $scope.tableContent[number].email = modalInputs[2].value;
@@ -186,10 +174,10 @@ app.controller('mainController', ($scope, $http) => {
 
 
   /**
-   * Create empty inputs for new users
-   */
-
+    * Create empty inputs for new users
+    */
   $scope.addTableRow = function() {
+    $scope.editModeTitle = "Add person identity";
     number = $scope.tableContent.length;
 
     editModeContent =
@@ -200,15 +188,12 @@ app.controller('mainController', ($scope, $http) => {
       + '<input type="text" placeholder="Balance"' + editModeClass + '>';
 
     $scope.numberValue = false; //new user set value as false
-
     $scope.editMode.innerHTML = editModeContent;
   }
 
-
   /**
-   * Remove selected person
-   */
-
+    * Remove selected person
+    */
   $scope.remove = function(number) {
     if(number !== false) {
       number = getCorrectArrayIndex(number);
@@ -216,13 +201,19 @@ app.controller('mainController', ($scope, $http) => {
     }
     buttonArrayContent();
 
-    // Assign id numbers one more time
+    /**
+      * Assign id numbers one more time
+      */
     for(i=0; i<$scope.tableContent.length; i++) {
       $scope.tableContent[i].id = i;
     }
   }
 
+  /**
+    * Select image to show in modal fade
+    */
   $scope.showFiles = function(stringVar) {
-
+    $scope.imageSrc = stringVar;
   }
+
 });
