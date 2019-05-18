@@ -1,16 +1,27 @@
+let balanceStartScope = 500;
+let balanceFinalScope = 100000;
 let number = 0;
-let tableContent = [];
+// take values from modal dialog inputs
+let modalInputs = [];
+let editModeContent = "";
+let editModeClass = 'class="form-control form-control-md mb-3 modalInput"';
+let re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 let app = angular.module('mainApp', []);
 app.controller('mainController', ($scope, $http) => {
 
   $scope.tablePartBegin = 0;
-  $scope.tablePartLimit = 10;
+  $scope.tableRowScope = 10;
+  $scope.rowScope = 10;
   $scope.tableContent = [];
   // Array contains button to change table part
   $scope.buttonArray = [];
   // String to set edit Modal Dialog title
   $scope.editModeTitle = "";
+  $scope.previousSortElement = '';
+  $scope.editMode = document.getElementById("edit-mode");
+  // Statement about incorrect input data
+  $scope.modalDialogErrors = "";
 
   /**
     * Response object contains users
@@ -21,9 +32,7 @@ app.controller('mainController', ($scope, $http) => {
       url: 'js/data.json'
     }).then((response) => {
       $scope.tableContent = response.data;
-      // variable to inspect array in console
-      tableContent = $scope.tableContent;
-      buttonArrayContent();
+      $scope.buttonArrayContent();
     });
   }
   $scope.request();
@@ -31,9 +40,10 @@ app.controller('mainController', ($scope, $http) => {
   /**
     * @return array $scope.buttonArray
     */
-  function buttonArrayContent() {
+  $scope.buttonArrayContent = function() {
+    $scope.tableRowScope = $scope.rowScope;
     $scope.buttonArray = [];
-    for(i=0; i<($scope.tableContent.length / $scope.tablePartLimit); i++) {
+    for(i=0; i<($scope.tableContent.length / $scope.tableRowScope); i++) {
       $scope.buttonArray[i] = i+1;
     }
   }
@@ -59,7 +69,7 @@ app.controller('mainController', ($scope, $http) => {
     if($scope.tablePartBegin >= $scope.tableContent.length) {
       $scope.tablePartBegin = Math.ceil($scope.tableContent.length / 10);
       $scope.tablePartBegin *= 10;
-      $scope.tablePartBegin -= $scope.tablePartLimit
+      $scope.tablePartBegin -= $scope.tableRowScope;
     }
   }
 
@@ -68,16 +78,14 @@ app.controller('mainController', ($scope, $http) => {
     * @param sortElement
     * @return Function set sortValue and sortBool
     */
-  $scope.previousElement = '';
-
   $scope.sort = function (sortElement) {
-    if($scope.previousElement === sortElement) {
+    if($scope.previousSortElement === sortElement) {
       $scope.sortBool = true;
-      $scope.previousElement = '';
+      $scope.previousSortElement = '';
     }
     else {
       $scope.sortBool = false;
-      $scope.previousElement = sortElement;
+      $scope.previousSortElement = sortElement;
     }
     $scope.sortValue = sortElement;
   }
@@ -100,10 +108,6 @@ app.controller('mainController', ($scope, $http) => {
     * Get selected user and write out in inputs
     * @type {HTMLElement}
     */
-  let editModeContent = '';
-  let editModeClass = 'class="form-control form-control-md mb-3 modalInput"';
-  $scope.editMode = document.getElementById("edit-mode");
-
   $scope.edit = function(number) {
     $scope.editModeTitle = "Edit person identity";
 
@@ -130,46 +134,84 @@ app.controller('mainController', ($scope, $http) => {
     $scope.editMode.innerHTML = editModeContent;
   }
 
+  $scope.checkValidInput = function() {
+    $scope.modalDialogErrors = "";
+    for(i=0; i<modalInputs.length; i++) {
+      modalInputs[i].value.toString();
+      if(modalInputs[i].value == "") {
+        $scope.modalDialogErrors = 'You didn\'t enter all values';
+      }
+    }
+
+    if($scope.modalDialogErrors == "") {
+      if(modalInputs[0].value.includes(" ")) {
+        $scope.modalDialogErrors += 'Firstname is incorrectly.';
+      }
+      if(modalInputs[1].value.includes(" ")) {
+        $scope.modalDialogErrors += 'Surname is incorrectly. ';
+      }
+      if(!modalInputs[2].value.includes("@")) {
+        $scope.modalDialogErrors += 'Email is incorrectly. ';
+      }
+      else if(!modalInputs[2].value.includes(".")) {
+        $scope.modalDialogErrors += 'Email is incorrectly. ';
+      }
+      if(modalInputs[4].value < balanceStartScope) {
+        $scope.modalDialogErrors += "Set balance between " + balanceStartScope
+          + " - " + balanceFinalScope + ".";
+      }else if(modalInputs[4].value > balanceFinalScope) {
+        $scope.modalDialogErrors += "Set balance between " + balanceStartScope
+          + " - " + balanceFinalScope + ".";
+      }
+    }
+  }
+
   /**
     * Get value from inputs ( class modalInput )
     * and upload and change content in array $scope.tableContent
     */
-  $scope.saveChanges = function(number) {
+  $scope.saveChanges = function(number, firstTime) {
 
-    let modalInputs = document.getElementsByClassName('modalInput');
+    modalInputs = document.getElementsByClassName('modalInput');
+    $scope.checkValidInput();
 
-    if(number === false) {
-      number = $scope.tableContent.length;
-
-      $scope.tableContent[number] = {
-        "id": $scope.tableContent.length,
-        "firstName": "",
-        "surname": "",
-        "gender": "",
-        "company": "",
-        "email": "",
-        "phone": "",
-        "address": {
-          "street": "",
-          "city": "",
-          "state": ""
-        },
-        "balance": "",
-        "about": "",
-        "file": "space.jpg",
-        "registered": ""
+    if($scope.modalDialogErrors === "") {
+      if(number === false) {
+        number = $scope.tableContent.length;
+        $scope.tableContent[number] = {
+          "id": $scope.tableContent.length,
+          "firstName": "",
+          "surname": "",
+          "gender": "",
+          "company": "",
+          "email": "",
+          "phone": "",
+          "address": {
+            "street": "",
+            "city": "",
+            "state": ""
+          },
+          "balance": "",
+          "about": "",
+          "file": "space.jpg",
+          "registered": ""
+        }
+        $scope.buttonArrayContent();
       }
-
-      buttonArrayContent();
+      else {
+        number = getCorrectArrayIndex(number);
+      }
+      $scope.tableContent[number].firstname = modalInputs[0].value;
+      $scope.tableContent[number].surname = modalInputs[1].value;
+      $scope.tableContent[number].email = modalInputs[2].value;
+      $scope.tableContent[number].company = modalInputs[3].value;
+      $scope.tableContent[number].balance = "$" + modalInputs[4].value;
     }
-    else {
-      number = getCorrectArrayIndex(number);
+    else if(firstTime) {
+      setTimeout(() => {
+        $('#editModal').modal('show');
+      }, 1000);
     }
-    $scope.tableContent[number].firstname = modalInputs[0].value;
-    $scope.tableContent[number].surname = modalInputs[1].value;
-    $scope.tableContent[number].email = modalInputs[2].value;
-    $scope.tableContent[number].company = modalInputs[3].value;
-    $scope.tableContent[number].balance = modalInputs[4].value;
   }
 
 
@@ -185,7 +227,7 @@ app.controller('mainController', ($scope, $http) => {
       + '<input type="text" placeholder="Surname"' + editModeClass + '>'
       + '<input type="text" placeholder="Email"' + editModeClass + '>'
       + '<input type="text" placeholder="Company"' + editModeClass + '>'
-      + '<input type="text" placeholder="Balance"' + editModeClass + '>';
+      + '<input type="number" placeholder="Balance"' + editModeClass + '>';
 
     $scope.numberValue = false; //new user set value as false
     $scope.editMode.innerHTML = editModeContent;
@@ -199,7 +241,7 @@ app.controller('mainController', ($scope, $http) => {
       number = getCorrectArrayIndex(number);
       $scope.tableContent.splice(number, 1);
     }
-    buttonArrayContent();
+    $scope.buttonArrayContent();
 
     /**
       * Assign id numbers one more time

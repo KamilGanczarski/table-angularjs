@@ -16,21 +16,21 @@
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.6/angular.min.js"></script>
   <script src="js/angular.js"></script>
 </head>
-<body class='w-100 m-0 row bg-black' ng-app="mainApp" ng-controller="mainController">
+<body class='bg-black' ng-app="mainApp" ng-controller="mainController">
 
-  <header class='col-sm-12 row mx-0 bg-dark justify-content-between'>
+  <header class='w-100 mx-auto row bg-dark justify-content-between'>
 
-    <div class='col-sm-4 py-3 row justify-content-start'>
-      <a href="" class='h4 my-0 px-2 text-danger'>Navbar</a>
+    <div class='col-sm-4 py-3 mx-0 row justify-content-start'>
+      <a href="#" class='h4 my-0 px-4 text-danger'>Navbar</a>
     </div>
 
-    <form action="" method="get" class='col-sm-4 py-3 justify-content-center input-group'>
+    <form action="" method="get" class='col-sm-4 py-3 mx-0 justify-content-center input-group'>
       <input type="text" placeholder='search' ng-model="tableSearch" autofocus
         class='form-control form-control-sm'>
     </form>
 
-    <div class='col-sm-4 py-3 row justify-content-end'>
-      <select name="language" class='col-sm-3 form-control form-control-sm'>
+    <div class='col-sm-4 row py-3 mx-0 justify-content-end'>
+      <select name="language" class='col-sm-3 mx-3 form-control form-control-sm'>
         <option value="english">English</option>
         <option value="polish">Polish</option>
       </select>
@@ -41,7 +41,13 @@
   <main class='container-fluid row mx-auto'>
     <div class="col-sm-12 mx-auto my-2">
 
-      <div class="w-100 m-0 row justify-content-end">
+      <div class="w-100 m-0 row justify-content-between">
+        <div class="input-group col-sm-5">
+          <input type="number" min="5" max="100" ng-model="rowScope" class="form-control-sm my-3">
+          <div class="input-group-append">
+            <button class="btn btn-danger my-3" name="button" ng-click="buttonArrayContent()">Set rows per page:</button>
+          </div>
+        </div>
         <button class="btn btn-danger m-3" ng-click="addTableRow()" data-toggle="modal"
           data-target="#editModal">Add person</button>
       </div>
@@ -79,7 +85,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr ng-repeat="item in tableContent | orderBy: sortValue: sortBool | filter: tableSearch | limitTo: tablePartLimit: tablePartBegin">
+          <tr ng-repeat="item in tableContent | orderBy: sortValue: sortBool | filter: tableSearch | limitTo: tableRowScope: tablePartBegin">
             <td>{{ item.firstname }}</td>
             <td>{{ item.surname }}</td>
             <td>{{ item.email }}</td>
@@ -101,26 +107,20 @@
       </table>
 
       <div class="w-100 m-0 row justify-content-end">
-
-        <!-- <div class="input-group col-sm-4 justify-content-end">
-          <input type="text" placeholder="Search" class="form-control-sm">
-          <button type="button" class="btn btn-danger"></button>
-        </div> -->
-
         <div class="row m-0 p-0 justify-content-end">
-          <button class="btn btn-danger m-1" ng-click="changeTablePart(-tablePartLimit)"> &#60; </button>
+          <button class="btn btn-danger m-1" ng-click="changeTablePart(-tableRowScope)"> &#60; </button>
           <div ng-repeat="num in buttonArray">
             <button class="btn btn-danger m-1"
-              ng-click="setTablePart(num*tablePartLimit - tablePartLimit)">{{ num }}</button>
+              ng-click="setTablePart(num*tableRowScope - tableRowScope)">{{ num }}</button>
           </div>
-          <button class="btn btn-danger m-1" ng-click="changeTablePart(+tablePartLimit)"> &#62; </button>
+          <button class="btn btn-danger m-1" ng-click="changeTablePart(+tableRowScope)"> &#62; </button>
         </div>
       </div>
 
     </div>
   </main>
 
-  <footer class='col-sm-12 mx-0 row bg-dark text-center text-light'>
+  <footer class='container-fluid mx-0 row bg-dark text-center text-light'>
     <p class='py-4 my-0 mx-auto'>Table written in JS and AngularJS</p>
   </footer>
 
@@ -138,10 +138,13 @@
         </div>
 
         <div class="modal-body text-center" id="edit-mode"></div>
+        <div class="modal-body text-danger row">
+          <p class="m-0 p-0 pl-3">{{ modalDialogErrors }}</p>
+        </div>
 
         <div class="modal-footer">
           <button type="button" class="btn btn-primary" data-dismiss="modal"
-            ng-click="saveChanges(numberValue)">Save changes</button>
+            ng-click="saveChanges(numberValue, true)">Save changes</button>
 
           <button type="button" class="btn btn-danger" data-dismiss="modal"
             ng-click="remove(numberValue)">Remove</button>
