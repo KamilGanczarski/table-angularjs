@@ -31,6 +31,7 @@ app.controller('mainController', ($scope, $http) => {
       url: 'js/data.json'
     }).then((response) => {
       $scope.tableContent = response.data;
+      $scope.setButtonsUnderTable();
     });
   }
   $scope.request();
@@ -49,21 +50,21 @@ app.controller('mainController', ($scope, $http) => {
     $scope.buttonArrayStart[0] = 0;
     $scope.buttonArrayMiddle = [];
     $scope.buttonArrayEnd = [];
-    let tablePartNumber = Math.ceil($scope.tableContent.length / $scope.tableRowScope);
-    if(tablePartNumber > 9) {
+    let tablePartsNumber = Math.ceil($scope.tableContent.length / $scope.tableRowScope);
+    if(tablePartsNumber > 9) {
       for(i=0; i<5; i++) {
         $scope.buttonArrayStart[i] = i;
       }
 
       arrayStart = 5;
-      arrayEnd = tablePartNumber-5;
+      arrayEnd = tablePartsNumber-5;
       for(i=arrayStart; i<arrayEnd; i++) {
         arrayIndex = i - $scope.buttonArrayStart.length;
         $scope.buttonArrayMiddle[arrayIndex] = i;
       }
 
-      arrayStart = tablePartNumber-5;
-      arrayEnd = tablePartNumber;
+      arrayStart = tablePartsNumber-5;
+      arrayEnd = tablePartsNumber;
       for(i=arrayStart; i<arrayEnd; i++) {
         arrayIndex = i - $scope.buttonArrayStart.length - $scope.buttonArrayMiddle.length;
         $scope.buttonArrayEnd[arrayIndex] = i;
@@ -77,7 +78,6 @@ app.controller('mainController', ($scope, $http) => {
       $scope.buttonArrayEnd = [];
     }
   }
-  $scope.setButtonsUnderTable();
 
   /**
     * Change table part
@@ -321,7 +321,6 @@ app.controller('mainController', ($scope, $http) => {
       number = getCorrectArrayIndex(number);
       $scope.tableContent.splice(number, 1);
     }
-    $scope.setButtonsUnderTable();
 
     /**
       * Assign id numbers one more time
