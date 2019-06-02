@@ -19,7 +19,6 @@
 <body class='bg-black' ng-app="mainApp" ng-controller="mainController">
 
   <header class='w-100 mx-auto row bg-dark justify-content-between'>
-
     <div class='col-sm-4 py-3 mx-0 row justify-content-start'>
       <a href="#" class='h4 my-0 px-4 text-danger'>Navbar</a>
     </div>
@@ -35,7 +34,6 @@
         <option value="polish">Polish</option>
       </select>
     </div>
-
   </header>
 
   <main class='container-fluid row mx-auto'>
@@ -43,9 +41,9 @@
 
       <div class="w-100 m-0 row justify-content-between">
         <div class="input-group col-sm-5">
-          <input type="number" min="5" max="100" ng-model="rowScope" class="form-control-sm my-3">
+          <input type="number" min="1" max="100" ng-model="rowScope" class="form-control-sm my-3">
           <div class="input-group-append">
-            <button class="btn btn-danger my-3" name="button" ng-click="buttonArrayContent()">Set rows per page:</button>
+            <button class="btn btn-danger my-3" name="button" ng-click="setButtonsUnderTable()">Set rows per page:</button>
           </div>
         </div>
         <button class="btn btn-danger m-3" ng-click="addTableRow()" data-toggle="modal"
@@ -108,12 +106,30 @@
 
       <div class="w-100 m-0 row justify-content-end">
         <div class="row m-0 p-0 justify-content-end">
-          <button class="btn btn-danger m-1" ng-click="changeTablePart(-tableRowScope)"> &#60; </button>
+          <!-- <button class="btn btn-danger m-1" ng-click="changeTablePart(-tableRowScope)">Previous</button>
           <div ng-repeat="num in buttonArray">
-            <button class="btn btn-danger m-1"
+            <button class="btn btn-danger m-1 tablePartInput"
               ng-click="setTablePart(num*tableRowScope - tableRowScope)">{{ num }}</button>
           </div>
-          <button class="btn btn-danger m-1" ng-click="changeTablePart(+tableRowScope)"> &#62; </button>
+          <button class="btn btn-danger m-1" ng-click="changeTablePart(+tableRowScope)">Next</button> -->
+
+          <button class="btn btn-outline-danger m-1" ng-click="changeTablePart(-tableRowScope)">Poprzedni</button>
+          <button ng-repeat="num in buttonArrayStart" class="btn btn-outline-danger m-1 tablePartInput"
+            ng-click="setTablePart(num, true)">{{ num + 1 }}</button>
+
+          <form ng-submit="setTablePart(setTablePartN, false)" class="align-middle">
+            <input type="text" placeholder="..." ng-model="setTablePartN" ng-value="setTablePartN"
+              class="form-control py-2 my-1 text-center setTablePartInput" style="width: 100px">
+          </form>
+
+          <div class="d-none">
+            <button ng-repeat="num in buttonArrayMiddle" class="btn btn-outline-danger m-1 tablePartInput"
+              ng-click="setTablePart(num, true)">{{ (num + 1) }}</button>
+          </div>
+
+          <button ng-repeat="num in buttonArrayEnd" class="btn btn-outline-danger m-1 tablePartInput"
+            ng-click="setTablePart(num, true)">{{ (num + 1) }}</button>
+          <button class="btn btn-outline-danger m-1" ng-click="changeTablePart(tableRowScope)">Następny</button>
         </div>
       </div>
 
@@ -174,5 +190,12 @@
   </div>
 
   <script src='js/resizePage.js'></script>
+  <script type="text/javascript">
+    setTimeout(() => {
+      let tablePartInput = document.getElementsByClassName("tablePartInput");
+      // console.log(tablePartInput[0]);
+      tablePartInput[0].className = "btn btn-danger m-1 tablePartInput";
+    }, 1000);
+  </script>
 </body>
 </html>

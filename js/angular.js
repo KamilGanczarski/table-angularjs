@@ -5,7 +5,6 @@ let number = 0;
 let modalInputs = [];
 let editModeContent = "";
 let editModeClass = 'class="form-control form-control-md mb-3 modalInput"';
-let re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 let app = angular.module('mainApp', []);
 app.controller('mainController', ($scope, $http) => {
@@ -32,7 +31,6 @@ app.controller('mainController', ($scope, $http) => {
       url: 'js/data.json'
     }).then((response) => {
       $scope.tableContent = response.data;
-      $scope.buttonArrayContent();
     });
   }
   $scope.request();
@@ -40,36 +38,99 @@ app.controller('mainController', ($scope, $http) => {
   /**
     * @return array $scope.buttonArray
     */
-  $scope.buttonArrayContent = function() {
+  let arrayStart = 0;
+  let arrayEnd = 0;
+  let arrayIndex = 0;
+  $scope.setButtonsUnderTable = function() {
+    arrayStart = 0;
+    arrayEnd = 0;
     $scope.tableRowScope = $scope.rowScope;
-    $scope.buttonArray = [];
-    for(i=0; i<($scope.tableContent.length / $scope.tableRowScope); i++) {
-      $scope.buttonArray[i] = i+1;
+    $scope.buttonArrayStart = [];
+    $scope.buttonArrayStart[0] = 0;
+    $scope.buttonArrayMiddle = [];
+    $scope.buttonArrayEnd = [];
+    let tablePartNumber = Math.ceil($scope.tableContent.length / $scope.tableRowScope);
+    if(tablePartNumber > 9) {
+      for(i=0; i<5; i++) {
+        $scope.buttonArrayStart[i] = i;
+      }
+
+      arrayStart = 5;
+      arrayEnd = tablePartNumber-5;
+      for(i=arrayStart; i<arrayEnd; i++) {
+        arrayIndex = i - $scope.buttonArrayStart.length;
+        $scope.buttonArrayMiddle[arrayIndex] = i;
+      }
+
+      arrayStart = tablePartNumber-5;
+      arrayEnd = tablePartNumber;
+      for(i=arrayStart; i<arrayEnd; i++) {
+        arrayIndex = i - $scope.buttonArrayStart.length - $scope.buttonArrayMiddle.length;
+        $scope.buttonArrayEnd[arrayIndex] = i;
+      }
+    }
+    else {
+      for(i=0; i<($scope.tableContent.length / $scope.tableRowScope); i++) {
+        $scope.buttonArrayStart[i] = i;
+      }
+      $scope.buttonArrayMiddle = [];
+      $scope.buttonArrayEnd = [];
     }
   }
-
-  /**
-    *Set number of limit rows once in table
-    */
-  $scope.setTablePart = function(number) {
-    $scope.tablePartBegin = number;
-  }
+  $scope.setButtonsUnderTable();
 
   /**
     * Change table part
     */
   $scope.changeTablePart = function(number) {
-
-    $scope.tablePartBegin += number;
-
-    if($scope.tablePartBegin < 0) {
-      $scope.tablePartBegin = 0;
+    number = $scope.tablePartBegin + number;
+    if(number < 0) {
+      number = 0;
     }
 
-    if($scope.tablePartBegin >= $scope.tableContent.length) {
-      $scope.tablePartBegin = Math.ceil($scope.tableContent.length / 10);
-      $scope.tablePartBegin *= 10;
-      $scope.tablePartBegin -= $scope.tableRowScope;
+    if(number >= $scope.tableContent.length) {
+      number = Math.ceil($scope.tableContent.length / $scope.tableRowScope);
+      number *= $scope.tableRowScope;
+      number -= $scope.tableRowScope;
+    }
+
+    $scope.setTablePart(number, 'ready');
+  }
+
+  /**
+    *Set number of limit rows once in table
+    */
+  $scope.setTablePart = function(number, bool) {
+    // $scope.tablePartBegin = number;
+    let middleButtonsIndex = [];
+    middleButtonsIndex[0] = 4 * $scope.tableRowScope;
+    middleButtonsIndex[1] = $scope.buttonArrayEnd[0] * $scope.tableRowScope;
+
+    // check if number is index of array
+    if(bool === true) {
+      number *= $scope.tableRowScope;
+    }
+    else if(bool === false) {
+      number--;
+      number *= $scope.tableRowScope;
+    }
+    if(number >= 0 && number < $scope.tableContent.length) {
+      $scope.rowScopeButtons = document.getElementsByClassName("tablePartInput");
+      $scope.tablePartBegin = number;
+      // set all buttons to inactive
+      for(i=0; i<$scope.rowScopeButtons.length; i++) {
+        $scope.rowScopeButtons[i].className = 'btn btn-outline-danger m-1 tablePartInput';
+      }
+      if(number === 0) {
+        $scope.rowScopeButtons[(number)].className = 'btn btn-danger m-1 tablePartInput';
+      }
+      else if(number > middleButtonsIndex[0] && number < middleButtonsIndex[1]) {
+        $scope.setTablePartN = number / $scope.tableRowScope + 1;
+      }
+      else {
+        $scope.rowScopeButtons[(number/$scope.tableRowScope)].className = 'btn btn-danger m-1 tablePartInput';
+        $scope.setTablePartN = '';
+      }
     }
   }
 
@@ -110,27 +171,31 @@ app.controller('mainController', ($scope, $http) => {
     */
   $scope.edit = function(number) {
     $scope.editModeTitle = "Edit person identity";
-
     number = getCorrectArrayIndex(number);
 
     editModeContent =
-      '<input type="text" placeholder="Name" value="'
-        + $scope.tableContent[number].firstname + '"' + editModeClass + '>'
-
-      + '<input type="text" placeholder="Name" value="'
-        + $scope.tableContent[number].surname + '"' + editModeClass + '>'
-
-      + '<input type="text" placeholder="Email" value="'
-        + $scope.tableContent[number].email + '"' + editModeClass + '>'
-
-      + '<input type="text" placeholder="Message" value="'
-        + $scope.tableContent[number].company + '"' + editModeClass + '>'
-
-      + '<input type="text" value="'
-        + $scope.tableContent[number].balance + '"' + editModeClass + '>';
+      '<div class="w-100 px-0 mx-0 my-2">' +
+        '<div class="w-100 px-1 mx-0 my-auto text-left text-light">Fristname</div>' +
+        '<textarea type="text" ' + editModeClass + '>'+ $scope.tableContent[number].firstname.toString() + '</textarea>' +
+      '</div>' +
+      '<div class="w-100 px-0 mx-0 my-2">' +
+        '<div class="w-100 px-1 mx-0 my-auto text-left text-light">Surname</div>' +
+        '<textarea type="text" ' + editModeClass + '>'+ $scope.tableContent[number].surname.toString() + '</textarea>' +
+      '</div>' +
+      '<div class="w-100 px-0 mx-0 my-2">' +
+        '<div class="w-100 px-1 mx-0 my-auto text-left text-light">Email</div>' +
+        '<textarea type="text" ' + editModeClass + '>'+ $scope.tableContent[number].email.toString() + '</textarea>' +
+      '</div>' +
+      '<div class="w-100 px-0 mx-0 my-2">' +
+        '<div class="w-100 px-1 mx-0 my-auto text-left text-light">Company</div>' +
+        '<textarea type="text" ' + editModeClass + '>'+ $scope.tableContent[number].company.toString() + '</textarea>' +
+      '</div>' +
+      '<div class="w-100 px-0 mx-0 my-2">' +
+        '<div class="w-100 px-1 mx-0 my-auto text-left text-light">Balance</div>' +
+        '<textarea type="text" ' + editModeClass + '>'+ $scope.tableContent[number].balance.toString() + '</textarea>' +
+      '</div>';
 
     $scope.numberValue = $scope.tableContent[number].id;
-
     $scope.editMode.innerHTML = editModeContent;
   }
 
@@ -196,7 +261,7 @@ app.controller('mainController', ($scope, $http) => {
           "file": "space.jpg",
           "registered": ""
         }
-        $scope.buttonArrayContent();
+        $scope.setButtonsUnderTable();
       }
       else {
         number = getCorrectArrayIndex(number);
@@ -223,11 +288,26 @@ app.controller('mainController', ($scope, $http) => {
     number = $scope.tableContent.length;
 
     editModeContent =
-    '<input type="text" placeholder="Fristname"' + editModeClass + '>'
-      + '<input type="text" placeholder="Surname"' + editModeClass + '>'
-      + '<input type="text" placeholder="Email"' + editModeClass + '>'
-      + '<input type="text" placeholder="Company"' + editModeClass + '>'
-      + '<input type="number" placeholder="Balance"' + editModeClass + '>';
+      '<div class="w-100 px-0 mx-0 my-2">' +
+        '<div class="w-100 px-1 mx-0 my-auto text-left text-light">Fristname</div>' +
+        '<textarea type="text" ' + editModeClass + '></textarea>' +
+      '</div>' +
+      '<div class="w-100 px-0 mx-0 my-2">' +
+        '<div class="w-100 px-1 mx-0 my-auto text-left text-light">Surname</div>' +
+        '<textarea type="text" ' + editModeClass + '></textarea>' +
+      '</div>' +
+      '<div class="w-100 px-0 mx-0 my-2">' +
+        '<div class="w-100 px-1 mx-0 my-auto text-left text-light">Email</div>' +
+        '<textarea type="text" ' + editModeClass + '></textarea>' +
+      '</div>' +
+      '<div class="w-100 px-0 mx-0 my-2">' +
+        '<div class="w-100 px-1 mx-0 my-auto text-left text-light">Company</div>' +
+        '<textarea type="text" ' + editModeClass + '></textarea>' +
+      '</div>' +
+      '<div class="w-100 px-0 mx-0 my-2">' +
+        '<div class="w-100 px-1 mx-0 my-auto text-left text-light">Balance</div>' +
+        '<textarea type="text" ' + editModeClass + '></textarea>' +
+      '</div>';
 
     $scope.numberValue = false; //new user set value as false
     $scope.editMode.innerHTML = editModeContent;
@@ -241,7 +321,7 @@ app.controller('mainController', ($scope, $http) => {
       number = getCorrectArrayIndex(number);
       $scope.tableContent.splice(number, 1);
     }
-    $scope.buttonArrayContent();
+    $scope.setButtonsUnderTable();
 
     /**
       * Assign id numbers one more time
